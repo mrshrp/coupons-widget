@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Виджет купонов - Примеры использования</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1,
+    h2 {
+      color: #333;
+    }
+
+    .example {
+      margin: 40px 0;
+    }
+
+    .code-block {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 16px;
+      margin: 16px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+
+    .widget-container {
+      margin: 20px 0;
+    }
+
+    /* Стили для демонстрации виджета */
+    .coupons-widget {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 500px;
+      margin: 0 auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      background: #fff;
+      overflow: hidden;
+      border: 1px solid #f0f0f0;
+    }
+
+    .coupons-list {
+      padding: 0;
+      margin: 0;
+    }
+
+    .coupons-widget .coupons-list .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f5f5f5;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .coupons-widget .coupons-list .list-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Статусы купонов */
+    .coupons-widget .coupons-list .list-item.current {
+      background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+      border-left: 4px solid #2196f3;
+    }
+
+    .coupons-widget .coupons-list .list-item.disabled {
+      opacity: 0.6;
+      background-color: #f8f9fa;
+    }
+
+    /* Левая и правая части элемента */
+    .coupons-widget .coupons-list .list-item>div {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .coupons-widget .coupons-list .list-item>div:first-child {
+      flex: 1;
+    }
+
+    .coupons-widget .coupons-list .list-item>div:last-child {
+      text-align: right;
+      min-width: 140px;
+    }
+
+    /* Элементы внутри блоков */
+    .coupons-widget .elem {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .coupons-widget .elem:last-child {
+      margin-bottom: 0;
+    }
+
+    .coupons-widget .elem-title {
+      font-size: 12px;
+      color: #6c757d;
+      font-weight: 500;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-right: 5px;
+    }
+
+    .coupons-widget .elem-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #212529;
+      display: block;
+      margin-top: -3px;
+    }
+
+    /* Специфичные стили для элементов */
+    .coupons-widget .elem.payment-date .elem-value {
+      color: #495057;
+      font-size: 16px;
+    }
+
+    .coupons-widget .elem.rate .elem-value {
+      color: #28a745;
+      font-size: 15px;
+    }
+
+    .coupons-widget .elem.amount .elem-value {
+      color: #007bff;
+      font-size: 15px;
+    }
+
+    /* Статусы для текущего купона */
+    .coupons-widget .list-item.current .elem.payment-date .elem-value {
+      color: #2196f3;
+      font-weight: 700;
+    }
+
+    .coupons-widget .list-item.current .elem.rate .elem-value,
+    .coupons-widget .list-item.current .elem.amount .elem-value {
+      color: #1976d2;
+    }
+
+    /* Состояния загрузки и ошибок */
+    .coupons-widget .loading,
+    .coupons-widget .empty,
+    .coupons-widget .error {
+      padding: 40px 24px;
+      text-align: center;
+      color: #6c757d;
+      font-size: 15px;
+    }
+
+    .coupons-widget .loading {
+      color: #007bff;
+    }
+
+    .coupons-widget .error {
+      color: #dc3545;
+      background-color: #f8d7da;
+    }
+
+    /* Мобильные стили */
+    @media (max-width: 480px) {
+      .coupons-widget {
+        max-width: 100%;
+        margin: 0;
+        border-radius: 8px;
+      }
+
+      .coupons-widget .coupons-list .list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 16px 20px;
+      }
+
+      .coupons-widget .coupons-list .list-item>div:last-child {
+        text-align: left;
+        min-width: auto;
+        width: 100%;
+      }
+
+      .coupons-widget .elem-title {
+        font-size: 11px;
+      }
+
+      .coupons-widget .elem-value {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Виджет купонов - Примеры использования</h1>
+
+    <div class="example">
+      <h2>1. Автоматическая инициализация</h2>
+      <p>Просто добавьте атрибут <code>data-coupons-widget</code> к любому элементу:</p>
+      <div class="code-block">
+        &lt;div data-coupons-widget data-isin="RU000A0JXPG2"&gt;&lt;/div&gt;
+      </div>
+      <div class="widget-container">
+        <div data-coupons-widget class="coupons-widget" data-isin="RU000A0JXPG2"></div>
+      </div>
+    </div>
+
+    <div class="example">
+      <h2>2. Программная инициализация</h2>
+      <div class="code-block">
+        <pre>
+        &lt;div id="my-widget"&gt;&lt;/div&gt;
+
+        &lt;script&gt;
+        // После загрузки скрипта виджета
+        const widget = new CouponsWidget({
+          containerId: 'my-widget',
+          data: [
+            {
+              paymentDate: '13.11.2025',
+              rate: '25%',
+              amount: '22.50₽',
+              disabled: true
+            },
+            {
+              paymentDate: '14.11.2025',
+              rate: '25%',
+              amount: '22.50₽',
+              disabled: true
+            },
+            {
+              paymentDate: '15.11.2025',
+              rate: '25%',
+              amount: '22.50₽',
+              current: true
+            },
+            {
+              paymentDate: '16.12.2025',
+              rate: '25%',
+              amount: '22.50₽'
+            },
+            {
+              paymentDate: '17.01.2026',
+              rate: '23%',
+              amount: '21.15₽'
+            }
+          ]
+        });
+        &lt;/script&gt;
+        </pre>
+      </div>
+      <div class="widget-container">
+        <div id="programmatic-widget" class="coupons-widget"></div>
+      </div>
+    </div>
+
+    <div class="example">
+      <h2>3. Загрузка данных через API виджета</h2>
+      <div class="code-block">
+        <pre>
+        &lt;script&gt;
+          const widget = new CouponsWidget({
+            containerId: 'moex-widget',
+          });
+
+          widget.load('RU000A106ZQ4');
+        &lt;/script&gt;
+        </pre>
+      </div>
+      <div class="widget-container">
+        <div id="moex-widget-example" class="coupons-widget"></div>
+      </div>
+      <p><em>Виджет автоматически загружает данные с сайта Московской биржи</em></p>
+    </div>
+
+    <h2>Методы API виджета</h2>
+
+    <div class="example">
+      <h3>Интерактивная демонстрация</h3>
+      <div style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+        <div style="margin-bottom: 15px;">
+          <label for="isin-input" style="display: block; margin-bottom: 5px; font-weight: 600;">ISIN код
+            облигации:</label>
+          <input type="text" id="isin-input" placeholder="Например: RU000A10DA66"
+            style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; width: 200px; margin-right: 10px;">
+          <button onclick="loadWidgetData()"
+            style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px;">
+            Загрузить
+          </button>
+          <button onclick="destroyWidget()"
+            style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Уничтожить
+          </button>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <strong>Примеры ISIN кодов:</strong>
+        </div>
+        <div style="margin-bottom: 15px; font-size: 14px;">
+          <button onclick="setISIN('RU000A10DA66')"
+            style="margin: 2px; padding: 4px 8px; background: #e9ecef; border: 1px solid #ced4da; border-radius: 3px; cursor: pointer;">Газпром
+            нефть 005P-02R</button>
+          <button onclick="setISIN('RU000A10D9K0')"
+            style="margin: 2px; padding: 4px 8px; background: #e9ecef; border: 1px solid #ced4da; border-radius: 3px; cursor: pointer;">АО
+            Авто Финанс Банк БО-001Р-16</button>
+          <button onclick="setISIN('RU000A10C8H9')"
+            style="margin: 2px; padding: 4px 8px; background: #e9ecef; border: 1px solid #ced4da; border-radius: 3px; cursor: pointer;">Оил
+            Ресурс 001P-02</button>
+        </div>
+
+        <div id="api-demo-widget" class="coupons-widget" style="margin-top: 15px;"></div>
+
+        <div style="margin-top: 15px; font-size: 14px; color: #6c757d;">
+          <strong>Статус:</strong> <span id="widget-status">Виджет не создан</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <pre>
+// Создание виджета
+const widget = new CouponsWidget(options);
+
+// Загрузка данных по ISIN
+await widget.load('RU000A0JX0J2');
+
+// Обновление данных
+widget.updateData(newData);
+
+// Уничтожение виджета
+widget.destroy();
+      </pre>
+    </div>
+
+    <h2>Параметры конфигурации</h2>
+    <div class="code-block">
+      <pre>
+      {
+        containerId: 'coupons-widget', // ID контейнера
+        isin: null, // URL API для загрузки данных
+        data: [] // Статические данные
+      }
+      </pre>
+    </div>
+  </div>
+
+  <!-- Подключение CouponsWidget -->
+  <script src="dist/coupons-widget.js"></script>
+
+  <!-- CouponsWidget примеры -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Программный виджет с кастомными данными
+      new CouponsWidget({
+        containerId: 'programmatic-widget',
+        data: [
+          {
+            paymentDate: '13.11.2025',
+            rate: '25%',
+            amount: '22.50₽',
+            disabled: true
+          },
+          {
+            paymentDate: '14.11.2025',
+            rate: '25%',
+            amount: '22.50₽',
+            disabled: true
+          },
+          {
+            paymentDate: '15.11.2025',
+            rate: '25%',
+            amount: '22.50₽',
+            current: true
+          },
+          {
+            paymentDate: '16.12.2025',
+            rate: '25%',
+            amount: '22.50₽'
+          },
+          {
+            paymentDate: '17.01.2026',
+            rate: '23%',
+            amount: '21.15₽'
+          }
+        ]
+      });
+
+      // Пример загрузки данных с MOEX
+      const moexWidget = new CouponsWidget({
+        containerId: 'moex-widget-example',
+        isin: 'RU000A106ZQ4'
+      });
+    });
+
+    // Переменная для хранения демо-виджета
+    let demoWidget = null;
+
+    // Функция для установки ISIN в поле ввода
+    function setISIN(isin) {
+      document.getElementById('isin-input').value = isin;
+    }
+
+    // Функция для загрузки данных в виджет
+    async function loadWidgetData() {
+      const isinInput = document.getElementById('isin-input');
+      const statusElement = document.getElementById('widget-status');
+      const isin = isinInput.value.trim();
+
+      if (!isin) {
+        alert('Пожалуйста, введите ISIN код');
+        return;
+      }
+
+      try {
+        statusElement.textContent = 'Загрузка данных...';
+
+        // Если виджет не создан, создаем его
+        if (!demoWidget) {
+          demoWidget = new CouponsWidget({
+            containerId: 'api-demo-widget',
+            isin: null,
+            data: []
+          });
+          statusElement.textContent = 'Виджет создан, загружаем данные...';
+        }
+
+        // Загружаем данные
+        await demoWidget.load(isin);
+        statusElement.textContent = `Данные загружены для ${isin}`;
+
+      } catch (error) {
+        statusElement.textContent = `Ошибка: ${error.message}`;
+        console.error('Ошибка загрузки:', error);
+      }
+    }
+
+    // Функция для уничтожения виджета
+    function destroyWidget() {
+      const statusElement = document.getElementById('widget-status');
+
+      if (demoWidget) {
+        demoWidget.destroy();
+        demoWidget = null;
+        statusElement.textContent = 'Виджет уничтожен';
+      } else {
+        statusElement.textContent = 'Виджет уже был уничтожен или не создан';
+      }
+    }
+
+    // Обработка нажатия Enter в поле ввода
+    document.addEventListener('DOMContentLoaded', function () {
+      const isinInput = document.getElementById('isin-input');
+      if (isinInput) {
+        isinInput.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            loadWidgetData();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
