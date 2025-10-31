@@ -1,12 +1,19 @@
 {
   "name": "coupons-widget",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "version": "1.12.1",
+  "description": "TypeScript CouponsWidget - встраиваемый виджет купонов для облигаций",
+  "main": "dist/coupons-widget.min.js",
+  "types": "dist/coupons-widget.d.ts",
   "scripts": {
+    "build": "webpack --mode production",
+    "dev": "concurrently \"webpack --mode development --watch\" \"npm run serve\"",
+    "build:dev": "webpack --mode development",
+    "clean": "rm -rf dist",
+    "serve": "python3 -m http.server 8000",
     "minifyJS": "uglifyjs --compress --mangle --warn --output build/d.min.js src/index.js",
-    "production": "npm run version:bump --silent && rm -f  build/d.min.js && npm run minifyJS --silent && npm run version:add --silent && npm run send",
-    "version:add": "echo \"/*! v - $(npm run version:extract --silent)\n * Build time: $(date '+%Y-%m-%d %H:%M:%S')\n */\n$(cat build/d.min.js)\" >  build/d.min.js",
+    "production": "npm run version:bump --silent && rm -f build/d.min.js && npm run build --silent && npm run copy:build && npm run version:add --silent && npm run send",
+    "copy:build": "mkdir -p build && cp dist/coupons-widget.min.js build/d.min.js",
+    "version:add": "echo \"/*! v - $(npm run version:extract --silent)\n * Build time: $(date '+%Y-%m-%d %H:%M:%S')\n */\n$(cat dist/element-builder.min.js)\" > build/d.min.js",
     "version:bump": "npm version patch --no-git-tag-version --silent",
     "version:extract": "cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]'",
     "send": "node ./scripts/send.js"
@@ -21,7 +28,14 @@
   },
   "homepage": "https://github.com/mrshrp/coupons-widgett#readme",
   "devDependencies": {
-    "uglify-js": "^3.17.3"
+    "@types/node": "^20.10.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "concurrently": "^9.2.1",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.0",
+    "uglify-js": "^3.17.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.186.0",
