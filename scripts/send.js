@@ -8,13 +8,13 @@ const s3 = new S3Client({
     secretAccessKey: process.env.SECRET_KEY,
   },
   endpoint: process.env.ENDPOINT,
-  region: process.env.REGION,
+  region: process.env.REGION || 'us-east-1',
   forcePathStyle: true,
 });
 (async () => {
   try {
-    const bucketName = 'scripts';
-    const fileObjectKey = 'news-widget.min.js';
+    const bucketName = process.env.BUCKET_NAME || 'scripts';
+    const fileObjectKey = process.env.FILE_KEY || 'coupons-widget.min.js';
 
     const fileObjectData = fs.readFileSync('./build/d.min.js');
     await s3.send(
