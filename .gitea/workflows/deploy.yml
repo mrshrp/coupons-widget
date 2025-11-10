@@ -49,12 +49,3 @@ jobs:
           BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME || 'scripts' }}
           FILE_KEY: ${{ secrets.S3_FILE_KEY || 'coupons-widget.min.js' }}
         run: node ./scripts/send.js
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: coupons-widget-build
-          path: |
-            dist/
-            build/
-          retention-days: 30

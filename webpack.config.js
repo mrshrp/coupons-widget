@@ -35,7 +35,7 @@ module.exports = (env, argv) => {
     optimization: {
       minimize: isProduction,
     },
-    devtool: isProduction ? 'source-map' : 'eval-source-map',
+    devtool: isProduction ? false : 'eval-source-map',
     mode: argv.mode || 'development',
   };
 };
